@@ -5,7 +5,8 @@ import bodyParser from "body-parser";
 
 
 //Router
-import Authroute from './routes/Authroute.js'
+import AuthRoute from './routes/Authroute.js'
+import UserRoute from './routes/Userroute.js'
 
 const app = express();
 dotenv.config()
@@ -22,4 +23,5 @@ mongoose
 
     //Usage of routes
 
-    app.use('/auth',Authroute)
+    app.use('/auth',AuthRoute)
+    app.use("/user",UserRoute)
