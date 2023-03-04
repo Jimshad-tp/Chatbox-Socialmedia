@@ -60,5 +60,9 @@ export const deleteUser = async (req, res) => {
   //follow a user
 
   export const followUser = async (req,res) =>{
-     
+     try {
+        
+     } catch (error) {
+        
+     }
   }
