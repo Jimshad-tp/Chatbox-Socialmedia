@@ -60,9 +60,29 @@ export const deleteUser = async (req, res) => {
   //follow a user
 
   export const followUser = async (req,res) =>{
-     try {
         
-     } catch (error) {
-        
-     }
+        const id = req.params.id
+        const {currentUserId} = req.body;
+
+        if(currentUserId === id) {
+            res.status(403).send({message:"Action forbidden"})
+            
+        }else {
+            try {
+                const followUser = await userModel.findById(id)
+                const followingUser = await userModel.findById(currentUserId);
+
+                if(!followUser.followers.includes(currentUserId)){
+                    await followUser.updateOne({$push : {followers:currentUserId}})
+                    await followingUser.updateOne({$push : {following :id }})
+                    res.status(200).json("User followed")
+                }else{
+                    res.status(403).json("User is Already followed by you")
+                }
+            } catch (error) {
+                res.status(500).json(error)
+                
+            }
+        }
+ 
   }
