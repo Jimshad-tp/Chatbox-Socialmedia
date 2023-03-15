@@ -4,18 +4,22 @@ import Jwt  from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
     try {
-       
-        const userExist = await userModel.findOne({username:req.body.username});
+      
+       const username = req.body.username;
+        const userExist = await userModel.findOne({username:username});
         if(userExist){
-            return res.status(400).send({message:"User Already Registered"})
+            return res.status(400).json({message:"User Already Registered"})
         }
         const password = req.body.password
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password,salt)
         req.body.password = hashedPassword;
         const newUser = new userModel(req.body)
-        await newUser.save()
-        res.status(200).send({message:"User created successfully",success:true})
+       const user =  await newUser.save()
+       const token = Jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:"1d"})
+       console.log("signup successfull");
+  res.status(200).send({message:"User created successfully",data:token,success:true})
+
     } catch (error) {
         res.status(500).send({message:"Error creating user",error,success:false})
 
@@ -33,10 +37,10 @@ export const loginUser = async (req,res) => {
             return res.status(200).send({message:"Password is incorrect",success:false})
         }else{
             const token = Jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:"1d"})
-            res.status(200).send({message:"Login successfull",success:true ,data:token})
+            console.log("Login successfull")
+            res.status(200).send({message:"Login successfull",success:true ,data:token,user})
         }
        
-
     } catch (error) {
         res.status(500).send({message:"User login rejected",error,success:false})
     }
